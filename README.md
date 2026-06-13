@@ -44,26 +44,47 @@ pip install pandas numpy openpyxl
 
 Merges:
 
-- **`ALL_NIC codes.xlsx`** — a sheet mapping `Company Name` → `NIC codes`
-- **`cpy_cin_code.dt`** — the CMIE master file (pipe-delimited) containing company
-  name, MCA CIN, and CMIE company code
+- **NIC codes file** (e.g. `ALL_NIC codes.xlsx`) — a sheet mapping `Company Name` → `NIC codes`
+- **CMIE master file** (e.g. `cpy_cin_code.dt`) — a pipe-delimited file containing
+  company name, MCA CIN, CMIE company code, and sales data
 
 The script:
 
-1. Loads and renames columns from both files
-2. Merges them on `company_name`
-3. Filters for a target set of NIC codes (default example: Food & Agro = `10, 11, 12`)
-4. Prints how many companies matched
+1. Loads and standardises columns from both files
+2. Merges them on company name
+3. Optionally filters to one or more NIC codes
+4. Saves the merged result to `.xlsx` or `.csv` — by default `combined_company_sales.xlsx`,
+   the expected input for `filter_top_companies.py`
 
 ### Usage
+
+Interactive mode (prompts for file paths and NIC codes):
 
 ```bash
 python combiner.py
 ```
 
-> **Note:** Edit the `target_nics` list and the input file names/paths near the top
-> of the script to match your data and sector of interest. Make sure both input
-> files are in the same directory as the script (or update the paths accordingly).
+Command-line mode:
+
+```bash
+# Keep all NIC codes
+python combiner.py --nic-file "ALL_NIC codes.xlsx" --master-file "cpy_cin_code.dt"
+
+# Filter to Food & Agro (NIC 10, 11, 12) and save as xlsx
+python combiner.py --nic 10,11,12 --output combined_company_sales.xlsx
+
+# Save as CSV instead
+python combiner.py --nic 10,11,12 --output food_agro.csv
+```
+
+### Key arguments
+
+| Flag | Description |
+|---|---|
+| `--nic-file` | Path to the NIC-codes `.xlsx` file (prompted if omitted) |
+| `--master-file` | Path to the CMIE master `.dt`/`.csv` file (prompted if omitted) |
+| `--nic` | Comma-separated NIC code(s) to keep, e.g. `10,11,12`. Blank/omitted = keep all |
+| `--output` | Output path, `.xlsx` or `.csv` (default: `combined_company_sales.xlsx`) |
 
 ---
 
@@ -191,8 +212,8 @@ VALUE_COL      # None = auto-detect the trade-value column
 ## Typical workflow
 
 ```bash
-# Step 1: build the master company dataset
-python combiner.py
+# Step 1: build the master company dataset (filtered to a sector, e.g. Food & Agro)
+python combiner.py --nic 10,11,12 --output combined_company_sales.xlsx
 
 # Step 2: rank companies by sales for a sector/year range
 python filter_top_companies.py --sector "Steel" --nic "24" --years 2018-2024 --top 10
