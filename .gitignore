@@ -1,0 +1,23 @@
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+
+# Data inputs/outputs (large, user-specific — keep out of version control)
+input/
+output/
+*_cache.csv
+
+# Source data files
+*.xlsx
+*.xls
+*.dt
+*.csv
+
+# OS / editor junk
+.DS_Store
+.vscode/
+*.swp
